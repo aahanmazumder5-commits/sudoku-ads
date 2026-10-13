@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sudoku</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', path='style.css') }}">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Sudoku</h1>
+
+    <p class="subtitle">
+        Test your logic and solve the puzzle
+    </p>
+
+
+    <!-- New Game -->
+
+    <form action="/new" method="post">
+
+        <div class="controls">
+
+            <select name="difficulty">
+
+                <option value="easy"
+                    {% if difficulty == "easy" %}selected{% endif %}>
+                    Easy
+                </option>
+
+                <option value="medium"
+                    {% if difficulty == "medium" %}selected{% endif %}>
+                    Medium
+                </option>
+
+                <option value="hard"
+                    {% if difficulty == "hard" %}selected{% endif %}>
+                    Hard
+                </option>
+
+            </select>
+
+            <button type="submit">
+                New Game
+            </button>
+
+        </div>
+
+    </form>
+
+
+    <!-- Message -->
+
+    {% if message %}
+
+    <div class="message">
+        {{ message }}
+    </div>
+
+    {% endif %}
+
+
+    <!-- Sudoku -->
+
+    <form method="post" action="/check">
+
+        <!-- Remember selected difficulty -->
+
+        <input
+            type="hidden"
+            name="difficulty"
+            value="{{ difficulty }}"
+        >
+
+
+        <div class="board">
+
+            {% for row in range(9) %}
+
+                {% for col in range(9) %}
+
+                    {% set value = board[row][col] %}
+                    {% set original_value = original[row][col] %}
+
+                    <div class="cell
+
+                        {% if row % 3 == 0 %}
+                            top-border
+                        {% endif %}
+
+                        {% if col % 3 == 0 %}
+                            left-border
+                        {% endif %}
+
+                    ">
+
+                        {% if original_value != 0 %}
+
+                            <!-- Given number -->
+
+                            <input
+                                type="text"
+                                value="{{ original_value }}"
+                                readonly
+                                class="given"
+                            >
+
+                        {% else %}
+
+                            <!-- User input -->
+
+                            <input
+                                type="text"
+                                name="cell_{{ row }}_{{ col }}"
+                                value="{% if value != 0 %}{{ value }}{% endif %}"
+                                maxlength="1"
+                                inputmode="numeric"
+                                class="user-cell"
+                            >
+
+                        {% endif %}
+
+
+                        <!-- Store original puzzle -->
+
+                        <input
+                            type="hidden"
+                            name="original_{{ row }}_{{ col }}"
+                            value="{{ original_value }}"
+                        >
+
+                    </div>
+
+                {% endfor %}
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- Buttons -->
+
+        <div class="buttons">
+
+            <button type="submit">
+                Check Answer
+            </button>
+
+
+            <button
+                type="submit"
+                formaction="/solve"
+                class="solve-button">
+
+                Solve
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+</body>
+
+</html>
